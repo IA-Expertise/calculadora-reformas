@@ -86,7 +86,121 @@ document.addEventListener("DOMContentLoaded", () => {
 
   sondarTudo();
   setInterval(sondarTudo, 30000);
+  iniciarVitrine();
 });
+
+const BANNER_SLIDES = [
+  {
+    tag: "Compliance B2B",
+    titulo: "CNPJ Alerta & CPF Alerta",
+    descricao: "Auditoria instantânea de certidões e histórico jurídico de clientes e fornecedores.",
+    link: "https://cnpjalerta.com.br",
+    cta: "Consultar Agora →",
+    corBadge: "bg-amber-500/20 text-amber-300 border-amber-400/30"
+  },
+  {
+    tag: "Legal Tech",
+    titulo: "LexMax — Gestão Jurídica com IA",
+    descricao: "Acompanhamento processual inteligente integrado ao eProc e Datajud para escritórios.",
+    link: "https://lexmax.com.br",
+    cta: "Conhecer LexMax →",
+    corBadge: "bg-sky-500/20 text-sky-300 border-sky-400/30"
+  },
+  {
+    tag: "Marketing IA",
+    titulo: "PostMais — Automação no WhatsApp",
+    descricao: "Crie e publique campanhas profissionais para sua empresa direto pelo WhatsApp.",
+    link: "https://postmais.com.br",
+    cta: "Acessar PostMais →",
+    corBadge: "bg-emerald-500/20 text-emerald-300 border-emerald-400/30"
+  },
+  {
+    tag: "Desenvolvimento Sob Medida",
+    titulo: "Criação de Aplicativos e Sistemas",
+    descricao: "Soluções digitais completas, integrações de APIs e plataformas para empresas privadas e órgãos públicos.",
+    link: "https://iaexpertise.com.br",
+    cta: "Solicitar Orçamento →",
+    corBadge: "bg-purple-500/20 text-purple-300 border-purple-400/30"
+  },
+  {
+    tag: "Inteligência Artificial",
+    titulo: "IAExpertise — Agentes e Automação Corporativa",
+    descricao: "Implementação de assistentes de IA, atendimento automatizado e inteligência de dados para negócios.",
+    link: "https://iaexpertise.com.br",
+    cta: "Ver Soluções →",
+    corBadge: "bg-indigo-500/20 text-indigo-300 border-indigo-400/30"
+  }
+];
+
+function iniciarVitrine() {
+  const raiz = document.getElementById("vitrine");
+  const slide = document.getElementById("vitrine-slide");
+  const pontos = document.getElementById("vitrine-pontos");
+  if (!raiz || !slide || !pontos || !BANNER_SLIDES.length) return;
+
+  let indice = 0;
+  let timer = 0;
+  const reduzido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function mostrar(proximo) {
+    indice = (proximo + BANNER_SLIDES.length) % BANNER_SLIDES.length;
+    const item = BANNER_SLIDES[indice];
+    slide.innerHTML = `
+      <span class="vitrine-badge ${item.corBadge}">${escapar(item.tag)}</span>
+      <div class="vitrine-texto">
+        <strong>${escapar(item.titulo)}</strong>
+        <p>${escapar(item.descricao)}</p>
+      </div>
+      <a class="vitrine-cta" href="${escapar(item.link)}" target="_blank" rel="noopener noreferrer">${escapar(item.cta)}</a>
+    `;
+    pontos.querySelectorAll("button").forEach((botao, posicao) => {
+      const ativo = posicao === indice;
+      botao.setAttribute("aria-current", ativo ? "true" : "false");
+      botao.tabIndex = ativo ? 0 : -1;
+    });
+  }
+
+  BANNER_SLIDES.forEach((item, posicao) => {
+    const botao = document.createElement("button");
+    botao.type = "button";
+    botao.setAttribute("aria-label", item.titulo);
+    botao.addEventListener("click", () => {
+      mostrar(posicao);
+      reiniciar();
+    });
+    pontos.appendChild(botao);
+  });
+
+  document.getElementById("vitrine-anterior").addEventListener("click", () => {
+    mostrar(indice - 1);
+    reiniciar();
+  });
+  document.getElementById("vitrine-proximo").addEventListener("click", () => {
+    mostrar(indice + 1);
+    reiniciar();
+  });
+
+  function parar() {
+    clearInterval(timer);
+    timer = 0;
+  }
+
+  function reiniciar() {
+    parar();
+    if (reduzido) return;
+    timer = setInterval(() => mostrar(indice + 1), 6500);
+  }
+
+  raiz.addEventListener("mouseenter", parar);
+  raiz.addEventListener("mouseleave", reiniciar);
+  raiz.addEventListener("focusin", parar);
+  raiz.addEventListener("focusout", (evento) => {
+    if (!raiz.contains(evento.relatedTarget)) reiniciar();
+  });
+
+  mostrar(0);
+  reiniciar();
+}
 
 function montarUfs() {
   const select = document.getElementById("reg-uf");
