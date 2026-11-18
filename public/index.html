@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Calculadoras da Reforma Tributária · IA Expertise</title>
+  <meta name="description" content="Portal para testar as calculadoras oficiais de CBS, IBS, Imposto Seletivo e o gerador de DANFSe (LC 214/2025)." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: "#0b1f33",
+            esmeralda: "#047857"
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="min-h-screen bg-slate-100 text-slate-900 antialiased">
+  <header class="cabecalho">
+    <div class="cabecalho-interno">
+      <div class="marca">
+        <div class="selo" aria-hidden="true">RTC</div>
+        <div>
+          <h1>Calculadoras da Reforma Tributária</h1>
+          <p>IA Expertise · LC 214/2025 · CBS, IBS e Imposto Seletivo</p>
+        </div>
+      </div>
+      <div class="status-barra" aria-label="Situação das APIs">
+        <span class="pilula verificando" id="status-regular"><span class="ponto"></span><span class="nome">Regime Regular · verificando</span></span>
+        <span class="pilula verificando" id="status-simples"><span class="ponto"></span><span class="nome">Simples · verificando</span></span>
+        <span class="pilula verificando" id="status-danfse"><span class="ponto"></span><span class="nome">DANFSe · verificando</span></span>
+      </div>
+    </div>
+  </header>
+
+  <div class="bg-white border-b border-slate-200">
+    <nav class="faixa-abas" aria-label="Módulos">
+      <div class="abas" role="tablist">
+        <button class="aba" type="button" role="tab" id="aba-regular" data-aba="regular" aria-selected="true" aria-controls="painel-regular">
+          Regime Regular <span class="etiqueta">CBS / IBS / IS</span>
+        </button>
+        <button class="aba" type="button" role="tab" id="aba-simples" data-aba="simples" aria-selected="false" aria-controls="painel-simples">
+          Simples Nacional <span class="etiqueta">CBS / IBS</span>
+        </button>
+        <button class="aba" type="button" role="tab" id="aba-danfse" data-aba="danfse" aria-selected="false" aria-controls="painel-danfse">
+          DANFSe <span class="etiqueta">XML → PDF</span>
+        </button>
+      </div>
+    </nav>
+  </div>
+
+  <main class="miolo">
+    <section id="painel-regular" role="tabpanel" aria-labelledby="aba-regular">
+      <div class="layout">
+        <form class="cartao" id="form-regular">
+          <div class="topo-form">
+            <div>
+              <h2>Operação do regime regular</h2>
+              <p class="ajuda">Um item por envio. O cálculo usa o endpoint de observabilidade: um erro não apaga o restante da resposta.</p>
+            </div>
+            <button class="btn btn-fantasma" type="button" id="btn-reg-exemplo">Preencher exemplo prático</button>
+          </div>
+
+          <div class="grade">
+            <label class="campo">
+              <span>UF de destino</span>
+              <select id="reg-uf" name="uf" required></select>
+            </label>
+            <label class="campo">
+              <span>Município (código IBGE)</span>
+              <input id="reg-municipio" name="municipio" inputmode="numeric" maxlength="7" placeholder="4314902" required />
+            </label>
+            <label class="campo">
+              <span>Código fiscal</span>
+              <select id="reg-tipo" name="tipo">
+                <option value="ncm">NCM — mercadoria</option>
+                <option value="nbs">NBS — serviço</option>
+              </select>
+            </label>
+            <label class="campo">
+              <span>NCM ou NBS</span>
+              <input id="reg-codigo" class="mono" name="codigo" placeholder="122011200" required />
+            </label>
+            <label class="campo">
+              <span>CST (CBS/IBS)</span>
+              <input id="reg-cst" class="mono" name="cst" maxlength="3" placeholder="200" required />
+            </label>
+            <label class="campo">
+              <span>cClassTrib</span>
+              <input id="reg-classtrib" class="mono" name="cClassTrib" maxlength="6" placeholder="200028" required />
+            </label>
+            <label class="campo largo">
+              <span>Data e hora do fato gerador</span>
+              <input id="reg-data" class="mono" name="dhFatoGerador" placeholder="2027-03-10T10:00:00-03:00" required />
+            </label>
+            <label class="campo">
+              <span>Valor da operação / base (R$)</span>
+              <input id="reg-base" class="mono" name="base" inputmode="decimal" placeholder="1200.00" required />
+            </label>
+            <label class="campo">
+              <span>Quantidade (opcional)</span>
+              <input id="reg-qtd" class="mono" name="quantidade" inputmode="decimal" placeholder="1" />
+            </label>
+            <label class="campo">
+              <span>Unidade (opcional)</span>
+              <input id="reg-unidade" class="mono" name="unidade" maxlength="6" placeholder="UN" />
+            </label>
+            <label class="campo">
+              <span>Alíquota CBS (%)</span>
+              <input id="reg-cbs" class="mono" name="cbs" inputmode="decimal" placeholder="8.8" />
+            </label>
+            <label class="campo">
+              <span>Alíquota IBS estadual (%)</span>
+              <input id="reg-ibs-uf" class="mono" name="ibsUf" inputmode="decimal" placeholder="0.05" />
+            </label>
+            <label class="campo">
+              <span>Alíquota IBS municipal (%)</span>
+              <input id="reg-ibs-mun" class="mono" name="ibsMun" inputmode="decimal" placeholder="0.05" />
+            </label>
+          </div>
+          <p class="ajuda">A partir de 2027 a API exige as alíquotas nominais. Antes disso, o portal não envia esse bloco — a calculadora usa a tabela de referência.</p>
+
+          <div class="acoes">
+            <button class="btn btn-primario" type="submit" id="btn-reg-calcular" data-rotulo="Calcular tributos">
+              <span class="spinner" hidden></span>
+              <span class="rotulo">Calcular tributos</span>
+            </button>
+            <button class="btn btn-secundario" type="button" id="btn-reg-limpar">Limpar formulário</button>
+          </div>
+        </form>
+
+        <div class="cartao" id="resultado-regular">
+          <div id="reg-alertas"></div>
+          <div class="subabas" role="tablist" aria-label="Resultado do regime regular">
+            <button class="subaba" type="button" data-sub="resumo" aria-selected="true">Resumo visual</button>
+            <button class="subaba" type="button" data-sub="json" aria-selected="false">JSON completo</button>
+            <button class="subaba" type="button" data-sub="xml" aria-selected="false">Gerar / validar XML</button>
+          </div>
+
+          <div data-painel-sub="resumo">
+            <p class="vazio" id="reg-vazio">Calcule uma operação para ver CBS, IBS estadual, IBS municipal, Imposto Seletivo e o total.</p>
+            <div class="cards" id="reg-cards" hidden>
+              <article class="kpi"><span class="rotulo">CBS</span><strong id="reg-valor-cbs">—</strong><span class="sub" id="reg-aliq-cbs"></span></article>
+              <article class="kpi"><span class="rotulo">IBS Estadual</span><strong id="reg-valor-uf">—</strong><span class="sub" id="reg-aliq-uf"></span></article>
+              <article class="kpi"><span class="rotulo">IBS Municipal</span><strong id="reg-valor-mun">—</strong><span class="sub" id="reg-aliq-mun"></span></article>
+              <article class="kpi"><span class="rotulo">Imposto Seletivo</span><strong id="reg-valor-is">—</strong><span class="sub">IS</span></article>
+              <article class="kpi total"><span class="rotulo">Total</span><strong id="reg-valor-total">—</strong><span class="sub">CBS + IBS + IS</span></article>
+            </div>
+            <div class="tabela-wrap" id="reg-tabela"></div>
+            <pre class="memoria" id="reg-memoria" hidden></pre>
+          </div>
+
+          <div data-painel-sub="json" hidden>
+            <div class="acoes">
+              <button class="btn btn-fantasma" type="button" id="btn-reg-copiar">Copiar JSON</button>
+            </div>
+            <pre class="json" id="reg-json">Nenhum cálculo ainda.</pre>
+          </div>
+
+          <div data-painel-sub="xml" hidden>
+            <p class="ajuda">A geração oficial espera o JSON do cálculo (grupo de tributação). Escolha o documento e valide o XML contra o XSD da calculadora.</p>
+            <div class="grade" style="margin-top:0.8rem">
+              <label class="campo">
+                <span>Tipo do documento</span>
+                <select id="xml-tipo">
+                  <option value="nfe">NF-e</option>
+                  <option value="nfce">NFC-e</option>
+                  <option value="cte">CT-e</option>
+                  <option value="cte-simplificado">CT-e simplificado</option>
+                  <option value="bpe">BP-e</option>
+                  <option value="nf3e">NF3e</option>
+                </select>
+              </label>
+              <label class="campo">
+                <span>Subtipo da validação</span>
+                <select id="xml-subtipo">
+                  <option value="grupo">Grupo de tributação</option>
+                  <option value="nota">Nota completa</option>
+                </select>
+              </label>
+            </div>
+            <div class="acoes">
+              <button class="btn btn-esmeralda" type="button" id="btn-xml-gerar" data-rotulo="Gerar XML">
+                <span class="spinner" hidden></span><span class="rotulo">Gerar XML</span>
+              </button>
+              <button class="btn btn-secundario" type="button" id="btn-xml-validar" data-rotulo="Validar XML">
+                <span class="spinner" hidden></span><span class="rotulo">Validar XML</span>
+              </button>
+              <button class="btn btn-fantasma" type="button" id="btn-xml-copiar">Copiar XML</button>
+            </div>
+            <div id="xml-alertas"></div>
+            <pre class="xml-saida" id="xml-saida">O XML gerado aparece aqui.</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="painel-simples" role="tabpanel" aria-labelledby="aba-simples" hidden>
+      <div class="layout">
+        <form class="cartao" id="form-simples">
+          <div class="topo-form">
+            <div>
+              <h2>Operação do Simples Nacional</h2>
+              <p class="ajuda">CBS e IBS com as alíquotas efetivas do Simples (pCBSSN e pIBSSN). O Imposto Seletivo é apenas repassado.</p>
+            </div>
+            <button class="btn btn-fantasma" type="button" id="btn-sn-exemplo">Preencher exemplo prático</button>
+          </div>
+
+          <label class="campo busca">
+            <span>Atividade</span>
+            <input id="sn-busca" type="search" placeholder="Busque por código ou descrição" autocomplete="off" />
+            <div class="sugestoes" id="sn-sugestoes" hidden></div>
+          </label>
+          <p class="ajuda" id="sn-atividade-escolhida">Nenhuma atividade selecionada. A lista vem da calculadora na data do fato gerador.</p>
+
+          <div class="grade" style="margin-top:0.8rem">
+            <label class="campo">
+              <span>Data do fato gerador</span>
+              <input id="sn-data" type="date" value="2027-03-15" required />
+            </label>
+            <label class="campo">
+              <span>cAtivSN</span>
+              <input id="sn-atividade" class="mono" maxlength="2" placeholder="01" required />
+            </label>
+            <label class="campo">
+              <span>cClassTrib</span>
+              <input id="sn-classtrib" class="mono" maxlength="6" placeholder="000001" required />
+            </label>
+            <label class="campo">
+              <span>Documento (tpDoc)</span>
+              <select id="sn-tpdoc">
+                <option value="55">55 — NF-e</option>
+                <option value="65">65 — NFC-e</option>
+              </select>
+            </label>
+            <label class="campo">
+              <span>CRT</span>
+              <select id="sn-crt">
+                <option value="1">1 — Simples Nacional</option>
+                <option value="2">2 — Simples, excesso de sublimite</option>
+                <option value="3">3 — Regime normal</option>
+                <option value="4">4 — MEI</option>
+              </select>
+            </label>
+            <label class="campo">
+              <span>tpRegimeIBSCBS (opcional)</span>
+              <select id="sn-regime">
+                <option value="">Não informar</option>
+                <option value="1">1 — regime regular</option>
+                <option value="2">2 — apuração por fora</option>
+              </select>
+            </label>
+            <label class="campo">
+              <span>Base de cálculo (R$)</span>
+              <input id="sn-base" class="mono" inputmode="decimal" placeholder="950.00" required />
+            </label>
+            <label class="campo">
+              <span>Imposto Seletivo já calculado (R$)</span>
+              <input id="sn-is" class="mono" inputmode="decimal" placeholder="0.00" value="0.00" />
+            </label>
+            <label class="campo">
+              <span>pCBSSN (%)</span>
+              <input id="sn-pcbs" class="mono" inputmode="decimal" placeholder="2.75" />
+            </label>
+            <label class="campo">
+              <span>pIBSSN (%)</span>
+              <input id="sn-pibs" class="mono" inputmode="decimal" placeholder="1.25" />
+            </label>
+            <label class="campo largo">
+              <span>Compra governamental (tpEnteGov, opcional)</span>
+              <select id="sn-ente">
+                <option value="">Não é compra governamental</option>
+                <option value="1">1 — União</option>
+                <option value="2">2 — Estado</option>
+                <option value="3">3 — Distrito Federal</option>
+                <option value="4">4 — Município</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="acoes">
+            <button class="btn btn-primario" type="submit" id="btn-sn-calcular" data-rotulo="Calcular Simples">
+              <span class="spinner" hidden></span>
+              <span class="rotulo">Calcular Simples</span>
+            </button>
+            <button class="btn btn-secundario" type="button" id="btn-sn-limpar">Limpar formulário</button>
+          </div>
+        </form>
+
+        <div class="cartao">
+          <div id="sn-alertas"></div>
+          <div class="subabas" role="tablist" aria-label="Resultado do Simples">
+            <button class="subaba" type="button" data-sub="resumo" aria-selected="true">Resumo visual</button>
+            <button class="subaba" type="button" data-sub="json" aria-selected="false">JSON completo</button>
+          </div>
+          <div data-painel-sub="resumo">
+            <p class="vazio" id="sn-vazio">Calcule uma operação para ver CBS, IBS e o total do Simples Nacional.</p>
+            <div class="cards" id="sn-cards" hidden>
+              <article class="kpi"><span class="rotulo">CBS</span><strong id="sn-valor-cbs">—</strong><span class="sub" id="sn-aliq-cbs"></span></article>
+              <article class="kpi"><span class="rotulo">IBS</span><strong id="sn-valor-ibs">—</strong><span class="sub" id="sn-aliq-ibs"></span></article>
+              <article class="kpi"><span class="rotulo">Imposto Seletivo</span><strong id="sn-valor-is">—</strong><span class="sub">Repasse</span></article>
+              <article class="kpi"><span class="rotulo">Receita bruta</span><strong id="sn-valor-rb">—</strong><span class="sub">vRBSN</span></article>
+              <article class="kpi total"><span class="rotulo">Total</span><strong id="sn-valor-total">—</strong><span class="sub">Valores devidos</span></article>
+            </div>
+            <div class="tabela-wrap" id="sn-tabela"></div>
+          </div>
+          <div data-painel-sub="json" hidden>
+            <div class="acoes">
+              <button class="btn btn-fantasma" type="button" id="btn-sn-copiar">Copiar JSON</button>
+            </div>
+            <pre class="json" id="sn-json">Nenhum cálculo ainda.</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="painel-danfse" role="tabpanel" aria-labelledby="aba-danfse" hidden>
+      <div class="layout">
+        <form class="cartao" id="form-danfse">
+          <div class="topo-form">
+            <div>
+              <h2>Gerador de DANFSe</h2>
+              <p class="ajuda">Envie o XML da NFS-e. O serviço devolve o PDF auxiliar. A situação e o canhoto não vêm do XML: você informa aqui.</p>
+            </div>
+          </div>
+
+          <div class="dropzone" id="dropzone">
+            <strong>Solte o arquivo .xml aqui</strong>
+            <p class="ajuda">ou escolha no computador. O conteúdo também pode ser colado abaixo.</p>
+            <input id="danfse-arquivo" type="file" accept=".xml,text/xml,application/xml" />
+          </div>
+
+          <label class="campo">
+            <span>XML da NFS-e</span>
+            <textarea id="danfse-xml" class="mono" spellcheck="false" placeholder="Cole o XML da NFS-e"></textarea>
+          </label>
+
+          <div class="grade" style="margin-top:0.8rem">
+            <label class="campo">
+              <span>Situação (stc)</span>
+              <select id="danfse-stc">
+                <option value="0">0 — Válida</option>
+                <option value="1">1 — Substituída</option>
+                <option value="2">2 — Cancelada</option>
+              </select>
+            </label>
+            <label class="check">
+              <input id="danfse-canhoto" type="checkbox" checked />
+              Imprimir canhoto
+            </label>
+          </div>
+
+          <div class="acoes">
+            <button class="btn btn-primario" type="submit" id="btn-danfse" data-rotulo="Gerar PDF">
+              <span class="spinner" hidden></span>
+              <span class="rotulo">Gerar PDF</span>
+            </button>
+            <button class="btn btn-secundario" type="button" id="btn-danfse-limpar">Limpar formulário</button>
+          </div>
+        </form>
+
+        <div class="cartao">
+          <div id="danfse-alertas"></div>
+          <p class="vazio" id="danfse-vazio">O PDF aparece aqui, pronto para conferir e baixar.</p>
+          <div id="danfse-acoes" class="acoes" hidden>
+            <a class="btn btn-esmeralda" id="danfse-baixar" href="#" download="danfse.pdf">Baixar danfse.pdf</a>
+          </div>
+          <iframe class="visor-pdf" id="danfse-visor" title="DANFSe em PDF" hidden></iframe>
+        </div>
+      </div>
+    </section>
+
+    <p class="rodape">Este portal não recalcula tributo. Ele apenas conversa com as calculadoras oficiais da Receita Federal e com o gerador de DANFSe. Conferir o resultado com a memória de cálculo antes de usar em documento fiscal.</p>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>
