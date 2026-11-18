@@ -96,7 +96,8 @@ const BANNER_SLIDES = [
     descricao: "Auditoria instantânea de certidões e histórico jurídico de clientes e fornecedores.",
     link: "https://cnpjalerta.com.br",
     cta: "Consultar Agora →",
-    corBadge: "bg-amber-500/20 text-amber-300 border-amber-400/30"
+    corBadge: "bg-amber-500/20 text-amber-300 border-amber-400/30",
+    imagem: "/banners/banner-cnpj-alerta.jpg"
   },
   {
     tag: "Legal Tech",
@@ -104,7 +105,8 @@ const BANNER_SLIDES = [
     descricao: "Acompanhamento processual inteligente integrado ao eProc e Datajud para escritórios.",
     link: "https://lexmax.com.br",
     cta: "Conhecer LexMax →",
-    corBadge: "bg-sky-500/20 text-sky-300 border-sky-400/30"
+    corBadge: "bg-sky-500/20 text-sky-300 border-sky-400/30",
+    imagem: "/banners/banner-lexmax.jpg"
   },
   {
     tag: "Marketing IA",
@@ -112,7 +114,8 @@ const BANNER_SLIDES = [
     descricao: "Crie e publique campanhas profissionais para sua empresa direto pelo WhatsApp.",
     link: "https://postmais.com.br",
     cta: "Acessar PostMais →",
-    corBadge: "bg-emerald-500/20 text-emerald-300 border-emerald-400/30"
+    corBadge: "bg-emerald-500/20 text-emerald-300 border-emerald-400/30",
+    imagem: "/banners/banner-postmais.jpg"
   },
   {
     tag: "Desenvolvimento Sob Medida",
@@ -120,7 +123,8 @@ const BANNER_SLIDES = [
     descricao: "Soluções digitais completas, integrações de APIs e plataformas para empresas privadas e órgãos públicos.",
     link: "https://iaexpertise.com.br",
     cta: "Solicitar Orçamento →",
-    corBadge: "bg-purple-500/20 text-purple-300 border-purple-400/30"
+    corBadge: "bg-purple-500/20 text-purple-300 border-purple-400/30",
+    imagem: "/banners/banner-sob-medida.jpg"
   },
   {
     tag: "Inteligência Artificial",
@@ -128,7 +132,8 @@ const BANNER_SLIDES = [
     descricao: "Implementação de assistentes de IA, atendimento automatizado e inteligência de dados para negócios.",
     link: "https://iaexpertise.com.br",
     cta: "Ver Soluções →",
-    corBadge: "bg-indigo-500/20 text-indigo-300 border-indigo-400/30"
+    corBadge: "bg-indigo-500/20 text-indigo-300 border-indigo-400/30",
+    imagem: "/banners/banner-agentes.jpg"
   }
 ];
 
@@ -145,13 +150,14 @@ function iniciarVitrine() {
   function mostrar(proximo) {
     indice = (proximo + BANNER_SLIDES.length) % BANNER_SLIDES.length;
     const item = BANNER_SLIDES[indice];
+    slide.style.backgroundImage = `url("${escapar(item.imagem)}")`;
     slide.innerHTML = `
-      <span class="vitrine-badge ${item.corBadge}">${escapar(item.tag)}</span>
-      <div class="vitrine-texto">
+      <div class="vitrine-conteudo">
+        <span class="vitrine-badge ${item.corBadge}">${escapar(item.tag)}</span>
         <strong>${escapar(item.titulo)}</strong>
         <p>${escapar(item.descricao)}</p>
+        <a class="vitrine-cta" href="${escapar(item.link)}" target="_blank" rel="noopener noreferrer">${escapar(item.cta)}</a>
       </div>
-      <a class="vitrine-cta" href="${escapar(item.link)}" target="_blank" rel="noopener noreferrer">${escapar(item.cta)}</a>
     `;
     pontos.querySelectorAll("button").forEach((botao, posicao) => {
       const ativo = posicao === indice;
