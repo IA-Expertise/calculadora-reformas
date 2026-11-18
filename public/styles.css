@@ -629,7 +629,17 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .rodape {
   color: var(--muted);
   font-size: 0.75rem;
-  margin-top: 1.4rem;
+  line-height: 1.55;
+  margin-top: 1.6rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.rodape p { margin: 0.35rem 0; }
+
+.rodape a {
+  color: var(--emerald-d);
+  font-weight: 650;
 }
 
 @media (max-width: 980px) {
