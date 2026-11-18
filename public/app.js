@@ -252,7 +252,13 @@ function mensagemFalha(corpo) {
 }
 
 async function sondar(prefixo) {
-  const caminhos = ["/health/live", "/versao", "/api/health/live", "/api/versao"];
+  const caminhos = [
+    "/health/live",
+    "/versao",
+    "/api/health/live",
+    "/api/versao",
+    "/api/calculadora/dados-abertos/versao"
+  ];
   for (const caminho of caminhos) {
     let resposta;
     try {

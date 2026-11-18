@@ -54,7 +54,7 @@ Health check sugerido: `/health/live`.
 - **Simples Nacional.** Busca atividades com `GET /api/calculadora/simples-nacional/atividades?data=AAAA-MM-DD` e calcula com `POST /api/calculadora/observabilidade/simples-nacional`.
 - **DANFSe.** Envia o XML com `POST /api/danfse?stc=0|1|2&canhoto=true|false` e `Content-Type: application/xml`. `stc`: 0 válida, 1 substituída, 2 cancelada. O PDF abre na página e baixa como `danfse.pdf`.
 
-A barra de status tenta, nesta ordem, `/health/live`, `/versao`, `/api/health/live` e `/api/versao`. O gerador em Go responde em `/health/live`. As calculadoras Java publicam a versão em `/api/versao`.
+A barra de status tenta, nesta ordem, `/health/live`, `/versao`, `/api/health/live`, `/api/versao` e `/api/calculadora/dados-abertos/versao`. O gerador em Go responde em `/health/live`. As calculadoras Java publicam a versão em `/api/versao` ou, no caminho oficial de dados abertos, em `/api/calculadora/dados-abertos/versao`.
 
 ## Contrato usado — e o que ficou assumido
 
