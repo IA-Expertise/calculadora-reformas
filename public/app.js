@@ -111,7 +111,7 @@ const BANNER_SLIDES = [
   {
     tag: "Marketing IA",
     titulo: "PostMais — Automação no WhatsApp",
-    descricao: "Crie e publique campanhas profissionais para sua empresa direto pelo WhatsApp.",
+    descricao: "Agência de Criação de Conteúdo que cabe no seu bolso",
     link: "https://postmais.com.br",
     cta: "Acessar PostMais →",
     corBadge: "bg-emerald-500/20 text-emerald-300 border-emerald-400/30",
