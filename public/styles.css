@@ -368,6 +368,8 @@ body {
 .campo select,
 .campo textarea {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   border: 1px solid #c5d0dc;
   background: #fff;
   color: var(--ink);
@@ -643,9 +645,11 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 }
 
 @media (max-width: 980px) {
-  .layout, .cards { grid-template-columns: 1fr; }
+  .layout, .cards, .grade { grid-template-columns: minmax(0, 1fr); }
   .cabecalho-interno { align-items: flex-start; flex-direction: column; }
   .status-barra { justify-content: flex-start; }
+  .topo-form { flex-direction: column; align-items: stretch; }
+  .topo-form .btn { align-self: flex-start; }
 }
 
 @media (max-width: 800px) {
@@ -655,6 +659,20 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 }
 
 @media (max-width: 640px) {
-  .grade { grid-template-columns: 1fr; }
   .cabecalho-interno, .faixa-abas, .miolo, .vitrine-moldura { width: min(1120px, calc(100% - 1.25rem)); }
+  .abas { flex-direction: column; overflow: visible; }
+  .aba {
+    white-space: normal;
+    width: 100%;
+    justify-content: space-between;
+    padding: 0.75rem 0.15rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .cards { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .kpi.total { grid-column: 1 / -1; }
+  .cartao { padding: 0.95rem 0.85rem 1rem; }
+  .campo input, .campo select, .campo textarea { font-size: 16px; }
+  .acoes .btn { flex: 1 1 100%; }
+  .visor-pdf { min-height: 70vh; }
+  .subabas { margin-left: -0.15rem; margin-right: -0.15rem; }
 }
